@@ -1,0 +1,10 @@
+services:
+  lampy-app:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    image: lampy-frontend:latest
+    container_name: lampy-container
+    ports:
+      - "80:80"
+    restart: always
