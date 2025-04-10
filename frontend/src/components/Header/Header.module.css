@@ -1,0 +1,63 @@
+.header {
+    padding: 0px 0px 20px;
+  }
+  
+  .topBanner {
+    background-image: url('/public/images/header.jpg');
+    background-repeat: no-repeat;
+    background-position: left top;
+    min-height: 190px;
+    padding: 60px 95px 0 95px;
+    border: #6c8286 solid 1px;
+    margin-bottom: 10px;
+    color: #c3dae0;
+  }
+  
+  .topBanner h1 {
+    font-size: 32px;
+    color: #c3dae0;
+    margin: 0px;
+    padding: 0px 0px 10px;
+    font-weight: normal;
+  }
+  
+  .topBanner h1 a {
+    color: #c3dae0;
+    text-decoration: none;
+  }
+  
+  .topBanner h1 a:hover {
+    text-decoration: none;
+  }
+  
+  .topBanner p {
+    font-size: 16px;
+    margin-left: 1px;
+    color: #c3dae0;
+    line-height: 1.3;
+  }
+  
+  .navigationBar {
+    background-color: #333d3f !important;
+    padding-top: 13px !important;
+    padding-bottom: 13px !important;
+    margin-bottom: 5px;
+    border-radius: 0 !important;
+  }
+  
+  .navLink {
+    padding: 0 35px !important;
+    font-size: 14px;
+    color: #f5f5f5 !important;
+    border-right: #91969a dotted 1px;
+    line-height: 1;
+  }
+  
+  .navLink:last-child {
+    border-right: none;
+  }
+  
+  .navLink:hover {
+    color: #f5f5f5 !important;
+    text-decoration: underline;
+  }

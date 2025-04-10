@@ -1,0 +1,48 @@
+  .col1 {
+    padding: 0px 0 20px 0;
+  }
+  
+  .col1 h1 {
+    font-size: 20px;
+    padding: 0 0 0 25px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #9aacae;
+    line-height: 1.2;
+  }
+  
+  .box {
+    padding: 10px 15px 5px;
+    border: #283032 solid 1px;
+  }
+  
+  .box p {
+      margin-bottom: 10px;
+      line-height: 1.4;
+      color: #9FB1B2;
+  }
+  
+  .box ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  
+  .box ul li {
+    margin: 0 0 8px;
+    padding: 0 0 0 15px;
+    font-size: 13px;
+    list-style-type: none;
+    background: url('/public/images/li.png') no-repeat left center;
+    line-height: 1.4;
+  }
+  
+  .box ul li a {
+    color: #9aacae;
+    text-decoration: underline;
+  }
+  
+  .box ul li a:hover {
+    color: #9aacae;
+    text-decoration: none;
+  }

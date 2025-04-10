@@ -1,0 +1,54 @@
+  .commonContent {
+    padding: 0 0 20px 0;
+  }
+  
+  .commonContent h2 {
+    font-size: 25px;
+    margin-bottom: 15px;
+    font-weight: normal;
+    color: #c3dae0;
+  }
+  
+  .commonContent hr {
+    border: 0;
+    border-bottom: 1px solid #5f6c73;
+    margin: 5px 0 10px 0;
+    height: 2px;
+    width: 100%;
+  }
+  
+  .commonContent p {
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    color: #9FB1B2;
+  }
+  
+  .topContent {
+    padding: 15px 0 0px 0;
+  }
+  
+  .column {
+    margin-bottom: 20px;
+  }
+  
+  .column h2 {
+    font-size: 25px;
+    margin-bottom: 15px;
+    font-weight: normal;
+    color: #c3dae0;
+  }
+  
+  .column p {
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    color: #9FB1B2;
+  }
+  
+  .borderLeft {
+    border-left: #6e7678 dotted 1px;
+    padding-left: 20px;
+    @media (max-width: 767.98px) {
+        border-left: none;
+        padding-left: 0;
+     }
+  }
