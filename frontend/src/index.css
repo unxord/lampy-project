@@ -10,6 +10,8 @@ body {
   color: #9FB1B2;
   font-size: 13px;
   line-height: 21px;
+
+  overflow-y: scroll;
 }
 
 code {
