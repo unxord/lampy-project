@@ -12,7 +12,7 @@ const Header: React.FC = () => {
         <p>Без сложностей. Только вы и ваши мысли.</p>
       </div>
 
-      <Navbar className={styles.navigationBar} variant="dark" expand="lg">
+      <Navbar className={styles.navigationBar} variant="dark">
         <Container fluid className="justify-content-center">
           <Nav>
             <Nav.Link href="#home" className={styles.navLink}>Главная</Nav.Link>

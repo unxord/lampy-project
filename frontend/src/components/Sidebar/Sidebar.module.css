@@ -46,3 +46,15 @@
     color: #9aacae;
     text-decoration: none;
   }
+
+
+
+  .box input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .fullWidthButton {
+    width: 100%;
+    margin-bottom: 10px;
+  }

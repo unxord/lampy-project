@@ -29,11 +29,7 @@ const MainContent: React.FC = () => {
               Благодарим за понимание
             </p>
             <br />
-            <Button
-              href="#"
-              variant="secondary"
-              size="sm"
-            >
+            <Button href="#" variant="secondary" size="sm">
               Читать далее
             </Button>
           </Col>

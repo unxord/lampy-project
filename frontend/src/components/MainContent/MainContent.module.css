@@ -47,8 +47,4 @@
   .borderLeft {
     border-left: #6e7678 dotted 1px;
     padding-left: 20px;
-    @media (max-width: 767.98px) {
-        border-left: none;
-        padding-left: 0;
-     }
   }
