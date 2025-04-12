@@ -1,10 +1,131 @@
 services:
-  lampy-app:
+  frontend:
     build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     image: lampy-frontend:latest
-    container_name: lampy-container
+    container_name: lampy_frontend_container
     ports:
       - "80:80"
     restart: always
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api/
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: lampy-backend:latest
+    container_name: lampy_backend_container
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    restart: always
+    environment:
+      - DEBUG=1
+      - DJANGO_SECRET_KEY=your_django_secret_key_here
+      - DATABASE_NAME=lampydb
+      - DATABASE_USER=lampyuser
+      - DATABASE_PASSWORD=lampypassword
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CHANNEL_REDIS_HOST=redis
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    networks:
+      - lampy_network
+
+  db:
+    image: postgres:16-alpine
+    container_name: lampy_db_container
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=lampydb
+      - POSTGRES_USER=lampyuser
+      - POSTGRES_PASSWORD=lampypassword
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lampyuser -d lampydb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lampy_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: lampy_redis_container
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - lampy_network
+    healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: lampy_rabbitmq_container
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - lampy_network
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: lampy-backend:latest
+    container_name: lampy_celery_worker_container
+    command: celery -A lampy_backend worker --loglevel=info
+    volumes:
+      - ./backend:/app
+    restart: always
+    environment:
+      - DEBUG=1
+      - DJANGO_SECRET_KEY=your_django_secret_key_here
+      - DATABASE_NAME=lampydb
+      - DATABASE_USER=lampyuser
+      - DATABASE_PASSWORD=lampypassword
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CHANNEL_REDIS_HOST=redis
+    depends_on:
+      - backend
+      - redis
+      - rabbitmq
+    networks:
+      - lampy_network
+
+volumes:
+  postgres_data:
+
+networks:
+  lampy_network:
+    driver: bridge

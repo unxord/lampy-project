@@ -32,8 +32,7 @@ const MainContent: React.FC = () => {
             <Button href="#" variant="secondary" size="sm">
               Читать далее
             </Button>
-          </Col>
-
+          </Col>          
           <Col md={6} className={`${styles.column} ${styles.borderLeft}`}>
             <h2>Объявления</h2>
             <p>
