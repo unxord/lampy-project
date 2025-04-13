@@ -8,6 +8,13 @@
     font-weight: normal;
     color: #c3dae0;
   }
+
+  .commonContent h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    font-weight: normal;
+    color: #9FB1B2;
+  }
   
   .commonContent hr {
     border: 0;
@@ -31,13 +38,6 @@
     margin-bottom: 20px;
   }
   
-  .column h2 {
-    font-size: 25px;
-    margin-bottom: 15px;
-    font-weight: normal;
-    color: #c3dae0;
-  }
-  
   .column p {
     line-height: 1.5;
     margin-bottom: 0.5rem;
@@ -45,6 +45,6 @@
   }
   
   .borderLeft {
-    border-left: #6e7678 dotted 1px;
+    border-left: 1px solid #5f6c73;
     padding-left: 20px;
   }
