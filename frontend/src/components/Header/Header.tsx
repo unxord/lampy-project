@@ -1,8 +1,12 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
 import styles from './Header.module.css';
 
 const Header: React.FC = () => {
+  const getNavLinkClass = ({ isActive }: { isActive: boolean }): string => {
+    return `${styles.navLink} ${isActive ? styles.active : ''}`;
+  };
   return (
     <header className={styles.header}>
       <div className={styles.topBanner}>
@@ -15,11 +19,19 @@ const Header: React.FC = () => {
       <Navbar className={styles.navigationBar} variant="dark">
         <Container fluid className="justify-content-center">
           <Nav>
-            <Nav.Link href="#home" className={styles.navLink}>Главная</Nav.Link>
-            <Nav.Link href="#about" className={styles.navLink}>О проекте</Nav.Link>
-            <Nav.Link href="#help" className={styles.navLink}>Помощь</Nav.Link>
-            <Nav.Link href="#contact" className={styles.navLink}>Контакты</Nav.Link>
-          </Nav>
+              <NavLink to="/" className={getNavLinkClass} end>
+                Главная
+              </NavLink>
+              <NavLink to="/about" className={getNavLinkClass}>
+                О проекте
+              </NavLink>
+              <NavLink to="/help" className={getNavLinkClass}>
+                Помощь
+              </NavLink>
+              <NavLink to="/contact" className={getNavLinkClass}>
+                Контакты
+              </NavLink>
+            </Nav>
         </Container>
       </Navbar>
     </header>

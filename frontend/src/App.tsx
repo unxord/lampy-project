@@ -1,11 +1,24 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
-import MainContent from './components/MainContent/MainContent';
+
+import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
+import HelpPage from './pages/HelpPage';
+import ContactPage from './pages/ContactPage';
 
 function App() {
   return (
     <Layout>
-      <MainContent />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/Contact" element={<ContactPage />} />
+
+        {/* <Route path="*" element={<NotFoundPage />} /> */}
+      </Routes>
     </Layout>
   );
 }

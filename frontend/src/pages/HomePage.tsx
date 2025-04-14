@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
-import styles from './MainContent.module.css';
-import { fetchMainContent } from '../../services/api';
-import { MainContentItem } from '../../types/api';
+import styles from "./HomePage.module.css";
+import { fetchMainContent } from '../services/api';
+import { MainContentItem } from '../types/api';
 
 type ContentType = MainContentItem['content_type'];
 const CONTENT_TYPES_ORDER: ContentType[] = ['INFO', 'ANNOUNCE', 'NEWS'];
 
-const MainContent: React.FC = () => {
+const HomePage: React.FC = () => {
   const [contentItems, setContentItems] = useState<MainContentItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -147,4 +147,4 @@ const MainContent: React.FC = () => {
   );
 };
 
-export default MainContent;
+export default HomePage;
