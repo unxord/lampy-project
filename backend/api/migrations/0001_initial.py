@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='CommonContentItem',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('page', models.CharField(choices=[('home', 'Главная (Home)'), ('about', 'О нас (About)'), ('contact', 'Контакты (Contact)')], db_index=True, default='home', help_text='Страница, на которой будет отображаться этот контент.', max_length=20, verbose_name='Страница')),
+                ('page', models.CharField(choices=[('home', 'Главная (Home)'), ('about', 'О нас (About)'), ('help', 'Помощь (Help)')], db_index=True, default='home', help_text='Страница, на которой будет отображаться этот контент.', max_length=20, verbose_name='Страница')),
                 ('title', models.CharField(max_length=255, verbose_name='Заголовок')),
                 ('content', models.TextField(verbose_name='Содержимое')),
                 ('read_more_link', models.URLField(blank=True, null=True, verbose_name="Ссылка 'Читать далее'")),

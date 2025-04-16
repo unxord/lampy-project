@@ -7,7 +7,7 @@ class CommonContentItem(models.Model):
     class PageType(models.TextChoices):
         HOME = 'home', _('Главная (Home)')
         ABOUT = 'about', _('О нас (About)')
-        CONTACT = 'contact', _('Контакты (Contact)')
+        HELP = 'help', _('Помощь (Help)')
 
     page = models.CharField(
         _("Страница"),

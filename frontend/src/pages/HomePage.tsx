@@ -1,148 +1,133 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
-import styles from "./HomePage.module.css";
-import { fetchMainContent } from '../services/api';
-import { MainContentItem } from '../types/api';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button, Spinner, Alert, Card } from 'react-bootstrap';
+import DOMPurify from 'dompurify';
 
-type ContentType = MainContentItem['content_type'];
-const CONTENT_TYPES_ORDER: ContentType[] = ['INFO', 'ANNOUNCE', 'NEWS'];
+import styles from "./HomePage.module.css";
+import { fetchContentForPage } from '../services/api';
+import { CommonContentItem, PaginatedResponse } from '../types/api';
 
 const HomePage: React.FC = () => {
-  const [contentItems, setContentItems] = useState<MainContentItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [contentData, setContentData] = useState<PaginatedResponse<CommonContentItem> | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadContent = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await fetchMainContent();
-        const sortedData = data.sort((a, b) => {
-            if (a.content_type < b.content_type) return -1;
-            if (a.content_type > b.content_type) return 1;
-            return a.order - b.order;
-        });
-        setContentItems(sortedData);
-      } catch (err) {
-        console.error("Error fetching main content:", err);
-        setError(err instanceof Error ? err.message : 'Произошла неизвестная ошибка');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadContent();
+  const loadContent = useCallback(async (page: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await fetchContentForPage('home', page);
+      setContentData(data);
+      setCurrentPage(page);
+    } catch (err: any) {
+      setError(err.message || 'Произошла ошибка при загрузке контента.');
+      setContentData(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const typePriorities = useMemo(() => {
-    const priorities: Partial<Record<ContentType, number>> = {};
-    if (!Array.isArray(contentItems)) {
-        return priorities;
+  useEffect(() => {
+    loadContent(currentPage);
+  }, [loadContent, currentPage]);
+
+  const handlePreviousPage = () => {
+    if (contentData?.previous) {
+      loadContent(currentPage - 1);
     }
-    contentItems.forEach(item => {
-      if (priorities[item.content_type] === undefined || item.order < priorities[item.content_type]!) {
-        priorities[item.content_type] = item.order;
-      }
-    });
-    return priorities;
-  }, [contentItems]);
+  };
 
-  const orderedContentTypes = useMemo(() => {
-    const presentTypes = CONTENT_TYPES_ORDER.filter(type => typePriorities[type] !== undefined);
-    return presentTypes.sort((typeA, typeB) => {
-      const priorityA = typePriorities[typeA] ?? Infinity;
-      const priorityB = typePriorities[typeB] ?? Infinity;
-      return priorityA - priorityB;
-    });
-  }, [typePriorities]);
-
-  const renderContentBlock = (type: ContentType) => {
-    if (!Array.isArray(contentItems)) {
-        console.error('renderContentBlock received non-array items:', contentItems);
-        return null;
+  const handleNextPage = () => {
+    if (contentData?.next) {
+      loadContent(currentPage + 1);
     }
+  };
 
-    const filteredItems = contentItems.filter(item => item.content_type === type);
-
-    if (filteredItems.length === 0) {
-      return null;
-    }
-
-    const blockTitle = type === 'INFO' ? 'Информация' : type === 'ANNOUNCE' ? 'Объявления' : 'Новости';
-
-    return (
-       <div className={styles.column}>
-          <h2>{blockTitle}</h2>
-          {filteredItems.map((item, index) => (
-            <React.Fragment key={item.id}>
-                {item.title !== blockTitle && <h3>{item.title}</h3>}
-                <p>{item.content}</p>
-                {item.read_more_link && (
-                    <Button href={item.read_more_link} variant="secondary" size="sm" className="mt-2">
-                    Читать далее
-                    </Button>
-                )}
-                {index < filteredItems.length - 1 && <hr className={styles.commonContent} /> }
-            </React.Fragment>
-          ))}
-       </div>
-    );
+  const createMarkup = (htmlContent: string) => {
+    return { __html: DOMPurify.sanitize(htmlContent) };
   };
 
   return (
-    <div className={styles.commonContent}>
-      {loading && (
-        <div className="text-center">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Загрузка...</span>
-          </Spinner>
-        </div>
-      )}
+    <div className={styles.rightSection}>
+      <div className={styles.commonContent}>
+        <h3>Новости</h3>
+        <hr />
 
-      {error && (
-        <Alert variant="danger">
-          Ошибка загрузки контента: {error}
-        </Alert>
-      )}
+        {isLoading && (
+          <div className="text-center my-3">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Загрузка...</span>
+            </Spinner>
+          </div>
+        )}
 
-      {!loading && !error && orderedContentTypes.length > 0 && (
-        <>
-          <Row className={styles.topContent}>
-            <Col md={12}>
-              {renderContentBlock(orderedContentTypes[0])}
-              {<hr className={styles.commonContent} />}
-            </Col>
-          </Row>
+        {error && !isLoading && (
+          <Alert variant="danger">
+            <Alert.Heading>Ошибка загрузки</Alert.Heading>
+            <p>{error}</p>
+            <Button onClick={() => loadContent(currentPage)} variant="outline-danger" size="sm">
+              Попробовать снова
+            </Button>
+          </Alert>
+        )}
 
-          {orderedContentTypes.length > 1 && (
-             Array.from({ length: Math.ceil((orderedContentTypes.length - 1) / 2) }).map((_, rowIndex) => {
-               const typeIndex1 = rowIndex * 2 + 1;
-               const typeIndex2 = rowIndex * 2 + 2;
-               const type1 = orderedContentTypes[typeIndex1];
-               const type2 = orderedContentTypes[typeIndex2];
+        {!isLoading && !error && contentData && contentData.results.length > 0 && (
+          <>
+            {contentData.results.map((item) => (
+              <Card key={item.id} className="mb-3 shadow-sm">
+                <Card.Body>
+                  <Card.Title dangerouslySetInnerHTML={createMarkup(item.title)} />
+                  <Card.Text dangerouslySetInnerHTML={createMarkup(item.content)} />
+                  <Card.Subtitle className="mb-2">
+                    {item.display_author ? `Автор: ${item.display_author}` : ''}
+                    {item.display_author && ' | '}
+                    Дата: {new Date(item.created_at).toLocaleDateString('ru-RU')}
+                  </Card.Subtitle>
+                  {item.read_more_link && (
+                    <Button href={item.read_more_link} target="_blank" rel="noopener noreferrer" variant="primary" size="sm">
+                      Читать далее
+                    </Button>
+                  )}
+                </Card.Body>
+              </Card>
+            ))}
 
-               return (
-                 <Row key={rowIndex} className="mt-3">
-                   {type1 && (
-                     <Col md={6} key={type1}>
-                       {renderContentBlock(type1)}
-                     </Col>
-                   )}
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <Button
+                variant={contentData?.previous ? "secondary" : "outline-secondary"}
+                onClick={handlePreviousPage}
+                disabled={!contentData?.previous || isLoading}
+                aria-label="Перейти на предыдущую страницу"
+              >
+                &laquo; Предыдущая
+              </Button>
 
-                   {type2 ? (
-                     <Col md={6} key={type2} className={styles.borderLeft}>
-                       {renderContentBlock(type2)}
-                     </Col>
-                   ) : (
-                     type1 && <Col md={6}></Col>
-                   )}
-                 </Row>
-               );
-             })
-          )}
-        </>
-      )}
+              {contentData && contentData.count > 0 && (
+                 <span className="text-muted">
+                   Страница {currentPage} из {Math.ceil(contentData.count / 3)}
+                 </span>
+              )}
+               {contentData && contentData.count === 0 && (
+                 <span className="text-muted">Нет данных</span>
+              )}
+
+              <Button
+                variant={contentData?.next ? "secondary" : "outline-secondary"}
+                onClick={handleNextPage}
+                disabled={!contentData?.next || isLoading}
+                aria-label="Перейти на следующую страницу"
+              >
+                Следующая &raquo;
+              </Button>
+            </div>
+          </>
+        )}
+
+        {!isLoading && !error && contentData && contentData.results.length === 0 && (
+          <Alert variant="info">На данный момент новостей нет.</Alert>
+        )}
+
+      </div>
     </div>
   );
 };
