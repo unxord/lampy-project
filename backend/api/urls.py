@@ -1,10 +1,6 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import MainContentViewSet
-
-router = DefaultRouter()
-router.register(r'maincontent', MainContentViewSet, basename='maincontent')
+from django.urls import path
+from .views import CommonContentListView
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('getcontent/<str:page_name>/', CommonContentListView.as_view(), name='get_content_by_page'),
 ]

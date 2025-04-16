@@ -1,29 +1,35 @@
+import django.db.models.deletion
+import django.utils.timezone
+from django.conf import settings
 from django.db import migrations, models
+
 
 class Migration(migrations.Migration):
 
     initial = True
 
     dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MainContentItem',
+            name='CommonContentItem',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200, verbose_name='Заголовок')),
+                ('page', models.CharField(choices=[('home', 'Главная (Home)'), ('about', 'О нас (About)'), ('contact', 'Контакты (Contact)')], db_index=True, default='home', help_text='Страница, на которой будет отображаться этот контент.', max_length=20, verbose_name='Страница')),
+                ('title', models.CharField(max_length=255, verbose_name='Заголовок')),
                 ('content', models.TextField(verbose_name='Содержимое')),
-                ('content_type', models.CharField(choices=[('INFO', 'Информация'), ('ANNOUNCE', 'Объявление'), ('NEWS', 'Новость')], db_index=True, default='INFO', max_length=10, verbose_name='Тип контента')),
                 ('read_more_link', models.URLField(blank=True, null=True, verbose_name="Ссылка 'Читать далее'")),
-                ('order', models.PositiveIntegerField(default=0, help_text='Чем меньше число, тем выше элемент в списке своего типа.', verbose_name='Порядок отображения')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления')),
+                ('author_pseudonym', models.CharField(blank=True, help_text='Если указано, будет отображаться вместо имени пользователя.', max_length=150, null=True, verbose_name='Псевдоним автора (переопределение)')),
+                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата создания')),
+                ('updated_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата обновления')),
+                ('author', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='common_content_items', to=settings.AUTH_USER_MODEL, verbose_name='Автор (Пользователь)')),
             ],
             options={
-                'verbose_name': 'Элемент контента главной страницы',
-                'verbose_name_plural': 'Элементы контента главной страницы',
-                'ordering': ['content_type', 'order', '-created_at'],
+                'verbose_name': 'Элемент общего контента',
+                'verbose_name_plural': 'Элементы общего контента',
+                'ordering': ['-created_at'],
             },
         ),
     ]

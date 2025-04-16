@@ -1,20 +1,29 @@
 from rest_framework import serializers
-from .models import MainContentItem
+from django.contrib.auth import get_user_model
+from .models import CommonContentItem
 
-class MainContentItemSerializer(serializers.ModelSerializer):
-    content_type_display = serializers.CharField(source='get_content_type_display', read_only=True)
+User = get_user_model()
+
+class CommonContentItemSerializer(serializers.ModelSerializer):
+    display_author = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = MainContentItem
+        model = CommonContentItem
         fields = [
             'id',
+            'page',
             'title',
             'content',
-            'content_type',
-            'content_type_display',
             'read_more_link',
-            'order',
+            'display_author',
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['created_at', 'updated_at', 'content_type_display']
+        read_only_fields = ['id', 'display_author', 'created_at', 'updated_at']
+
+    def get_display_author(self, obj):
+        if obj.author_pseudonym:
+            return obj.author_pseudonym
+        elif obj.author:
+            return obj.author.username
+        return None

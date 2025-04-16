@@ -1,47 +1,69 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+from django.utils import timezone
 
-class MainContentItem(models.Model):
-    class ContentType(models.TextChoices):
-        INFORMATION = 'INFO', _('Информация')
-        ANNOUNCEMENT = 'ANNOUNCE', _('Объявление')
-        NEWS = 'NEWS', _('Новость')
+class CommonContentItem(models.Model):
+    class PageType(models.TextChoices):
+        HOME = 'home', _('Главная (Home)')
+        ABOUT = 'about', _('О нас (About)')
+        CONTACT = 'contact', _('Контакты (Contact)')
+
+    page = models.CharField(
+        _("Страница"),
+        max_length=20,
+        choices=PageType.choices,
+        default=PageType.HOME,
+        db_index=True,
+        help_text=_("Страница, на которой будет отображаться этот контент.")
+    )
     title = models.CharField(
         _("Заголовок"),
-        max_length=200
+        max_length=255
     )
     content = models.TextField(
         _("Содержимое")
-    )
-    content_type = models.CharField(
-        _("Тип контента"),
-        max_length=10,
-        choices=ContentType.choices,
-        default=ContentType.INFORMATION,
-        db_index=True
     )
     read_more_link = models.URLField(
         _("Ссылка 'Читать далее'"),
         blank=True,
         null=True
     )
-    order = models.PositiveIntegerField(
-        _("Порядок отображения"),
-        default=0,
-        help_text=_("Чем меньше число, тем выше элемент в списке своего типа.")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("Автор (Пользователь)"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='common_content_items'
+    )
+    author_pseudonym = models.CharField(
+        _("Псевдоним автора (переопределение)"),
+        max_length=150,
+        blank=True,
+        null=True,
+        help_text=_("Если указано, будет отображаться вместо имени пользователя.")
     )
     created_at = models.DateTimeField(
         _("Дата создания"),
-        auto_now_add=True
+        default=timezone.now
     )
     updated_at = models.DateTimeField(
         _("Дата обновления"),
-        auto_now=True
+        default=timezone.now
     )
+
     class Meta:
-        verbose_name = _("Элемент контента главной страницы")
-        verbose_name_plural = _("Элементы контента главной страницы")
-        ordering = ['content_type', 'order', '-created_at']
+        verbose_name = _("Элемент общего контента")
+        verbose_name_plural = _("Элементы общего контента")
+        ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.get_content_type_display()}: {self.title}"
+        return f"{self.get_page_display()}: {self.title}"
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            pass
+        else:
+             self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
