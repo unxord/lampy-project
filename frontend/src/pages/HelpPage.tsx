@@ -50,7 +50,7 @@ const HelpPage: React.FC = () => {
   return (
     <div className={styles.rightSection}>
       <div className={styles.commonContent}>
-        <h3>Информация</h3>
+        <h3>Поддержка</h3>
         <hr />
 
         {isLoading && (
