@@ -79,6 +79,11 @@ services:
         interval: 5s
         timeout: 5s
         retries: 5
+    command: >
+      redis-server
+      --loglevel notice
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
 
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
