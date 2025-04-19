@@ -6,7 +6,12 @@ from django.core.cache import cache
 from django.conf import settings
 from .models import CommonContentItem
 from .serializers import CommonContentItemSerializer
+from django.contrib.auth import get_user_model
 
+from .models import CommonContentItem
+from .serializers import CommonContentItemSerializer, RegisterSerializer
+
+User = get_user_model()
 CACHE_TTL = getattr(settings, 'CONTENT_CACHE_TTL', 60 * 15)
 
 class CommonContentListView(generics.ListAPIView):
@@ -65,3 +70,23 @@ class CommonContentListView(generics.ListAPIView):
             response_data = serializer.data
             cache.set(cache_key, response_data, timeout=CACHE_TTL)
             return Response(response_data)
+        
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(
+            {
+                "user": {
+                    "username": user.username,
+                    "email": user.email,
+                 },
+                "message": "Пользователь успешно зарегистрирован. Пожалуйста, войдите."
+            },
+            status=status.HTTP_201_CREATED
+        )
