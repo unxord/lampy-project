@@ -60,3 +60,8 @@
   .box label {
     color: #9FB1B2;
   }
+
+  :global(#auth-error) {
+    padding: 8px !important;
+    text-align: center !important;
+  }

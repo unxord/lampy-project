@@ -17,3 +17,37 @@ export interface PaginatedResponse<T> {
   previous: string | null;
   results: T[];
 }
+
+export interface RegisterData {
+  username: string;
+  email: string;
+  password: string;
+  password2: string;
+}
+
+export interface RegisterResponse {
+  user: {
+      username: string;
+      email: string;
+  };
+  message: string;
+}
+
+export interface LoginData {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  access: string;
+  refresh: string;
+}
+
+export interface ApiErrorDetail {
+  [field: string]: string[];
+}
+
+export interface ApiErrorResponse {
+  detail?: string;
+  error?: ApiErrorDetail | string;
+}
